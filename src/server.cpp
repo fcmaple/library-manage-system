@@ -6,7 +6,11 @@ socketServer::socketServer(int port): serverPort(port){
 
     this->serverAddr.sin_family = AF_INET;
     this->serverAddr.sin_port = htons(port);
+#if 0
     this->serverAddr.sin_addr.s_addr = INADDR_ANY;
+#else
+    this->serverAddr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);//INADDR_ANY;
+#endif
     memset(serverAddr.sin_zero, '\0', sizeof(serverAddr.sin_zero));
 
     if(setsockopt(this->masterSock,SOL_SOCKET,SO_REUSEADDR,&flag,len)==-1){

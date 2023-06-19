@@ -38,20 +38,26 @@ int UI::loginUI(const char* username,const char* password) const {
 }
 CMD UI::translate(std::string& command){
     std::string cmd = stringToLower(command);
-    if(cmd == "exit"){
+    if(cmd.substr(0,4) == "exit"){
         return CMD::EXIT;
-    }else if(cmd == "register"){
+    }else if(cmd.substr(0,8) == "register"){
         return CMD::REGISTER;
-    }else if(cmd == "menu"){
+    }else if(cmd.substr(0,4) == "menu"){
         return CMD::MENU;
-    }else if(cmd == "login"){
+    }else if(cmd.substr(0,5) == "login"){
         return CMD::LOGIN;
     }else if(cmd.substr(0,3) == "add"){
         return CMD::ADD;
-    }else if(cmd.substr(0,6) == "remove"){
+    }else if(cmd.substr(0,2) == "rm"){
         return CMD::REMOVE;
     }else if(cmd.size()==0){
         return CMD::NOTHING;
+    }else if(cmd.substr(0,7) == "mybooks"){
+        return CMD::MYBOOKS;
+    }else if(cmd.substr(0,5) == "books"){
+        return CMD::BOOKS;
+    }else if(cmd.substr(0,6) == "search"){
+        return CMD::SEARCH;
     }else{
         fprintf(stderr,"Invalid Command\n");
         return CMD::INVALID;
@@ -86,6 +92,8 @@ int UI::parse(std::string& cmd){
             fprintf(stdout,"add      : Add a book to your personal borrow bookshelf.\n");
             fprintf(stdout,"rm       : Remove a book from your personal borrow bookshelf.\n");
             fprintf(stdout,"search   : Search the specified book.\n");
+            fprintf(stdout,"books    : Display all book in Library.\n");
+            fprintf(stdout,"mybooks  : Display all book in personal bookshelf.\n");
             fprintf(stdout,"exit     : Logout and exit the system.\n");
             break;
         }
@@ -102,8 +110,15 @@ int UI::parse(std::string& cmd){
                 break;
             }
             std::string bookName = getBookName(cmd);
+            std::cout << bookName << std::endl;
             if(!bookName.size()) break;
-            libMemory->borrow(this->ID,bookName.c_str());
+            int bookId = stringToint(bookName);
+            if(bookId<0)
+                libMemory->borrow(this->ID,bookName.c_str());
+            else
+                libMemory->borrow(this->ID,bookId);
+            // libMemory->checkState(this->ID,bookName.c_str());
+            break;
         }
         case CMD::REMOVE:{
             if(ID<0) {
@@ -112,7 +127,31 @@ int UI::parse(std::string& cmd){
             }
             std::string bookName = getBookName(cmd);
             if(!bookName.size()) break;
-            libMemory->back(this->ID,bookName.c_str());
+            int bookId = stringToint(bookName);
+            if(bookId<0)
+                libMemory->back(this->ID,bookName.c_str());
+            else
+                libMemory->back(this->ID,bookId);
+            break;
+        }
+        case CMD::MYBOOKS:{
+            if(ID<0) {
+                fprintf(stdout,"You need to login to check the book in your bookself. !\n");
+                break;
+            }
+            libMemory->checkState(this->ID);
+
+            break;
+        }
+        case CMD::SEARCH:{
+            std::string bookName = getBookName(cmd);
+            if(!bookName.size()) break;
+            libMemory->search(bookName.c_str());
+            break;
+        }
+        case CMD::BOOKS:{
+            libMemory->display();
+            break;
         }
         default:
             break;
@@ -138,3 +177,7 @@ int UI::run(){
     std::cout << "exit !\n";
     return 1;
 }
+
+// 熱門書 （）
+// 子類別： 實體書 電子書 有聲書 漫畫 CD 等等
+// 電子書： 可直接觀看 （頁數 .. 等）(Harry potter)
