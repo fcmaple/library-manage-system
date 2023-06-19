@@ -15,9 +15,10 @@ jobs:
           CXX: g++-12
       steps:
           - uses: actions/checkout@v3
-          - run: |
+          - name: dependency
+            run: |
                 sudo apt-get update
-                sudo apt-get install -y ninja-build g++-12 libstdc++-12-dev googletest-tools googletest libopenblas0-pthread
+                sudo apt-get install -y ninja-build g++-12 build-essential libstdc++-12-dev libgtest-dev
           - run: make
           - run: make test
 
