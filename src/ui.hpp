@@ -12,6 +12,7 @@ enum CMD{
 class UI{
 public:
     UI(int,void*,void*);
+    // UI(int,std::shared_ptr<LMS>,std::shared_ptr<LIBRARY>);
     void reset();
     void welcome();
     int run();

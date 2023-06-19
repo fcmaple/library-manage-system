@@ -15,5 +15,6 @@ struct LMS {
     char password[MAX_USER][20];
     unsigned int userIdx;
     void reset();
+    LMS();
 };
 #endif

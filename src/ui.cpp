@@ -12,6 +12,16 @@ UI::UI(int fd,void* shm,void* library):ID(-1){
     // strcpy(shared_data->username[shared_data->userIdx],"teresa");
     // std::cout << "Data in UI  shared memory: " << shared_data->username[shared_data->userIdx++] << " " << shared_data->userIdx << std::endl;  // Read data from the shared memory
 }
+// UI::UI(int fd,std::shared_ptr<LMS> shm,std::shared_ptr<LIBRARY> library):ID(-1){
+//     dup2(fd,STDIN_FILENO);
+//     dup2(fd,STDOUT_FILENO);
+//     dup2(fd,STDERR_FILENO);
+//     this->sharedMemory = shm;
+//     this->libMemory = library;
+//     // LMS* shared_data = static_cast<LMS*>(shm);
+//     // strcpy(shared_data->username[shared_data->userIdx],"teresa");
+//     // std::cout << "Data in UI  shared memory: " << shared_data->username[shared_data->userIdx++] << " " << shared_data->userIdx << std::endl;  // Read data from the shared memory
+// }
 int UI::registerUI(const char* username,const char* password){
     LMS* sharedData = this->sharedMemory;
     for(int i=0;i<MAX_USER;i++){
@@ -20,7 +30,7 @@ int UI::registerUI(const char* username,const char* password){
             strcpy(sharedData->username[i],username);
             strcpy(sharedData->password[i],password);
             printf("Register success ! your username : %s, password : %s\n",sharedData->username[i],sharedData->password[i]);
-            return 1;
+            return this->ID;
         }
     }
     return -1;
@@ -59,7 +69,7 @@ CMD UI::translate(std::string& command){
     }else if(cmd.substr(0,6) == "search"){
         return CMD::SEARCH;
     }else{
-        fprintf(stderr,"Invalid Command\n");
+        fprintf(stdout,"Invalid Command\n");
         return CMD::INVALID;
     }
 }

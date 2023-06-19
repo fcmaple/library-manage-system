@@ -22,7 +22,6 @@ TEST_F(MyTestFixture, BaseTest) {
     myVariable = 42;
     ASSERT_EQ(myVariable, 42);
 }
-// Test case using the fixture
 TEST_F(MyTestFixture, DisplayTest) {
 #if BLOCKSTDOUT
     ::testing::internal::CaptureStdout();
@@ -35,7 +34,6 @@ TEST_F(MyTestFixture, DisplayTest) {
 
     // std::cout << output << std::endl;
 }
-
 TEST_F(MyTestFixture, SearchTest) {
 #if BLOCKSTDOUT
     ::testing::internal::CaptureStdout();
@@ -48,7 +46,6 @@ TEST_F(MyTestFixture, SearchTest) {
     std::string output = ::testing::internal::GetCapturedStdout();
 #endif
 }
-
 TEST_F(MyTestFixture, CheckStateTest) {
 #if BLOCKSTDOUT
     ::testing::internal::CaptureStdout();
@@ -225,6 +222,106 @@ TEST_F(MyTestBook, DisplayTest) {
 #endif
 }
 // TEST_F(MyTestBook, BackTest) {
+// #if BLOCKSTDOUT
+//     ::testing::internal::CaptureStdout();
+// #endif
+// #if BLOCKSTDOUT
+//     std::string output = ::testing::internal::GetCapturedStdout();
+// #endif
+// }
+class MyTestUI : public ::testing::Test {
+protected:
+    void SetUp() override {
+
+    }
+
+    void TearDown() override {
+        // Clean up any resources used by the tests
+    }
+    std::string username = "dave";
+    std::string password = "dave";
+    LIBRARY* lib = new LIBRARY();
+    LMS* lms = new LMS();
+    std::shared_ptr<UI> ui = std::make_shared<UI>(1,lms,lib);
+};
+TEST_F(MyTestUI, RegisterTest) {
+#if BLOCKSTDOUT
+    ::testing::internal::CaptureStdout();
+#endif
+    int id = ui->registerUI(username.c_str(),password.c_str());
+    ASSERT_EQ(id,0);
+
+#if BLOCKSTDOUT
+    std::string output = ::testing::internal::GetCapturedStdout();
+#endif
+}
+TEST_F(MyTestUI, LoginTest) {
+#if BLOCKSTDOUT
+    ::testing::internal::CaptureStdout();
+#endif
+    int id = ui->registerUI(username.c_str(),password.c_str());
+    int login_id = ui->loginUI(username.c_str(),password.c_str());
+    ASSERT_EQ(id,login_id);
+    std::string fakeUsername = "aaa";
+    std::string fakePassword = "aaa";
+    login_id = ui->loginUI(fakeUsername.c_str(),fakePassword.c_str());
+    ASSERT_EQ(login_id,0);
+
+#if BLOCKSTDOUT
+    std::string output = ::testing::internal::GetCapturedStdout();
+#endif
+}
+TEST_F(MyTestUI, TranslateTest) {
+#if BLOCKSTDOUT
+    ::testing::internal::CaptureStdout();
+#endif
+    std::string cmd = "exit";
+    ASSERT_EQ(ui->translate(cmd),CMD::EXIT);
+    cmd = "register";
+    ASSERT_EQ(ui->translate(cmd),CMD::REGISTER);
+    cmd = "menu";
+    ASSERT_EQ(ui->translate(cmd),CMD::MENU);
+    cmd = "login";
+    ASSERT_EQ(ui->translate(cmd),CMD::LOGIN);
+    cmd = "add";
+    ASSERT_EQ(ui->translate(cmd),CMD::ADD);
+    cmd = "rm";
+    ASSERT_EQ(ui->translate(cmd),CMD::REMOVE);
+    cmd = "";
+    ASSERT_EQ(ui->translate(cmd),CMD::NOTHING);
+    cmd = "mybooks";
+    ASSERT_EQ(ui->translate(cmd),CMD::MYBOOKS);
+    cmd = "books";
+    ASSERT_EQ(ui->translate(cmd),CMD::BOOKS);   
+    cmd = "search";
+    ASSERT_EQ(ui->translate(cmd),CMD::SEARCH);
+    cmd = "aaa";
+    ASSERT_EQ(ui->translate(cmd),CMD::INVALID);
+
+#if BLOCKSTDOUT
+    std::string output = ::testing::internal::GetCapturedStdout();
+#endif
+}
+TEST_F(MyTestUI, GetUsernamePasswordTest) {
+#if BLOCKSTDOUT
+    ::testing::internal::CaptureStdout();
+#endif
+    std::string input = username+"\n";
+    std::string input2 = password+"\n";
+
+    std::stringstream inputStream1(input);
+    std::stringstream inputStream2(input2);
+    std::cin.rdbuf(inputStream1.rdbuf());
+    auto i = ui->getUsernameAndPassword();
+    std::cin.rdbuf(inputStream2.rdbuf());
+    auto j = ui->getUsernameAndPassword();
+    ASSERT_EQ(username,i.first);
+    ASSERT_EQ(password,j.first);
+#if BLOCKSTDOUT
+    std::string output = ::testing::internal::GetCapturedStdout();
+#endif
+}
+// TEST_F(MyTestUI, BackTest) {
 // #if BLOCKSTDOUT
 //     ::testing::internal::CaptureStdout();
 // #endif

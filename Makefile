@@ -20,9 +20,9 @@ PROG=LMS
 TEST_PROG= testLMS
 TESTFLAGS = -lgtest -lgtest_main -pthread
 
-.PHONY = all clean test
+.PHONY = all clean test run
 
-all: $(BIN_DIR)/$(PROG) $(TEST)
+all: $(BIN_DIR)/$(PROG)
 
 $(shell mkdir -p $(OBJ_DIR))
 $(shell mkdir -p $(BIN_DIR))
