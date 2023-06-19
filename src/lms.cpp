@@ -1,4 +1,4 @@
-#include "lms.h"
+#include "lms.hpp"
 void LMS::reset(){
     for(int i=0;i<MAX_USER;i++){
         memset(username[i],'\0',sizeof(username[i]));

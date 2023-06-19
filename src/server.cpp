@@ -1,5 +1,5 @@
-#include "server.h"
-#include "ui.h"
+#include "server.hpp"
+#include "ui.hpp"
 socketServer::socketServer(int port): serverPort(port){
     int flag =1,len = sizeof(int);
     this->masterSock = socket(PF_INET, SOCK_STREAM, 0); //?

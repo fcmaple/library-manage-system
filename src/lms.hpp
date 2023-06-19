@@ -1,5 +1,5 @@
-#ifndef LMS_H
-#define LMS_H
+#ifndef LMS_HPP
+#define LMS_HPP
 
 #define MAX_USER 50
 

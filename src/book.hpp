@@ -11,7 +11,7 @@
 #include <filesystem>
 #include <fstream>
 
-#include "util.h"
+#include "util.hpp"
 namespace fs = std::filesystem;
 enum bookType{
     ELECTRONIC,PHISICAL
@@ -19,6 +19,7 @@ enum bookType{
 
 class BOOK{
 public:
+    BOOK(fs::directory_entry);
     BOOK();
     // void set(const char*);
     void set(fs::directory_entry);

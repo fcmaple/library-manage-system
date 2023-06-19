@@ -19,8 +19,8 @@
 #include <memory>
 #include <cstring>     // For string operations
 
-#include "lms.h"
-#include "library.h"
+#include "lms.hpp"
+#include "library.hpp"
 class socketServer{
 public:
     socketServer(int);

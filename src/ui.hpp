@@ -1,11 +1,11 @@
-#ifndef UI_H
-#define UI_H
+#ifndef UI_HPP
+#define UI_HPP
 
 #include <string>
 #include <iostream>
 #include <memory>
-#include "lms.h"
-#include "library.h"
+#include "lms.hpp"
+#include "library.hpp"
 enum CMD{
 	EXIT,REGISTER,MENU,LOGIN,ADD,REMOVE,NOTHING,MYBOOKS,BOOKS,SEARCH,INVALID,
 };

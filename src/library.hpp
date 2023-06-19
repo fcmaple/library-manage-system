@@ -11,9 +11,9 @@
 #include <iostream>
 #include <filesystem>
 
-#include "book.h"
-#include "server.h"
-#include "util.h"
+#include "book.hpp"
+#include "server.hpp"
+#include "util.hpp"
 class LIBRARY{
 public:
     LIBRARY();
@@ -25,6 +25,7 @@ public:
     int checkState(int);
     int search(const char*);
     int display();
+    int getNum() const;
 private:
     BOOK books[MAX_BOOKS];
     int bookNum;

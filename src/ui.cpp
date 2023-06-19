@@ -1,7 +1,7 @@
-#include "ui.h"
-#include "server.h"
-#include "lms.h"
-#include "util.h"
+#include "ui.hpp"
+#include "server.hpp"
+#include "lms.hpp"
+#include "util.hpp"
 UI::UI(int fd,void* shm,void* library):ID(-1){
     dup2(fd,STDIN_FILENO);
     dup2(fd,STDOUT_FILENO);

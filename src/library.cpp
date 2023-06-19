@@ -1,9 +1,9 @@
-#include "library.h"
+#include "library.hpp"
 
 namespace fs = std::filesystem; 
 
 LIBRARY::LIBRARY(){
-    init();
+    // init();
 }
 
 void LIBRARY::init(){
@@ -12,14 +12,14 @@ void LIBRARY::init(){
     try {
         for (const fs::directory_entry& entry : fs::directory_iterator(dirPath)) {
             if (entry.is_regular_file()) {
-                std::cout << entry.path() << std::endl;
+                // std::cout << entry.path() << std::endl;
                 books[bookNum++].set(entry);
             }
         }
     } catch (const fs::filesystem_error& ex) {
         std::cerr << "Error: " << ex.what() << std::endl;
     }
-    fprintf(stdout,"LIBRARY init ,book num: %d !\n",bookNum);
+    // fprintf(stdout,"LIBRARY init ,book num: %d !\n",bookNum);
 }
 int LIBRARY::search(const char* bookName){
     std::string book_str(bookName);
@@ -58,6 +58,7 @@ int LIBRARY::borrow(int id,const char* bookName){
         int state = books[i].match(bookName);
         if(state>0){
             books[i].borrow(id);
+            printf("state !! %d\n",id);
             return id;
         }else if(state==0){
             fprintf(stdout,"The book is already borrowed !\n");
@@ -123,4 +124,8 @@ int LIBRARY::display(){
         else fprintf(stdout,"     State: Borrowed\n");
     }
     return 1;
+}
+
+int LIBRARY::getNum() const{
+    return this->bookNum;
 }

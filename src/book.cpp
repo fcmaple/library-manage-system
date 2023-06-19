@@ -1,7 +1,10 @@
-#include "book.h"
+#include "book.hpp"
 
-BOOK::BOOK(){}
-
+BOOK::BOOK(fs::directory_entry entry){
+    set(entry);
+}
+BOOK::BOOK(){
+}
 void BOOK::set(fs::directory_entry entry){
     memset(name,'\0',sizeof(name));
     std::string bn = removeEnd(entry.path().filename());
@@ -11,7 +14,7 @@ void BOOK::set(fs::directory_entry entry){
     state = false;
     borrower = -1;
     type = bookType::PHISICAL;
-    printf("Book Name: %s State: %d \n",name,state);
+    // printf("Book Name: %s State: %d \n",name,state);
 
 }
 int BOOK::match(const char* bookName) const{
