@@ -19,7 +19,20 @@ void LIBRARY::init(){
     } catch (const fs::filesystem_error& ex) {
         std::cerr << "Error: " << ex.what() << std::endl;
     }
+    semaphore = sem_open("/libSemaphore", O_CREAT | O_RDWR, 0666, 1);
     // fprintf(stdout,"LIBRARY init ,book num: %d !\n",bookNum);
+}
+void LIBRARY::close(){
+    sem_close(semaphore);
+    sem_unlink("/libSemaphore");
+}
+int LIBRARY::wait(){
+    sem_wait(semaphore);
+    return 1;
+}
+int LIBRARY::post(){
+    sem_post(semaphore);
+    return 1;
 }
 int LIBRARY::search(const char* bookName){
     std::string book_str(bookName);

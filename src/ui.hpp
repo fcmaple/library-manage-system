@@ -19,7 +19,7 @@ public:
     int parse(std::string&);
     const std::pair<std::string,std::string> getUsernameAndPassword();
     int registerUI(const char*,const char*);
-    int loginUI(const char*,const char*) const;
+    int loginUI(const std::string&,const std::string&);
     CMD translate(std::string&);
 private:
     LMS* sharedMemory;

@@ -49,10 +49,10 @@ socketServer::socketServer(int port): serverPort(port){
     LMS* shared_data = static_cast<LMS*>(sharedMemory);
     shared_data->reset();
 
-    strcpy(shared_data->username[0],"Dave");
+    // strcpy(shared_data->username[0],"Dave");
 
-    shared_data->userIdx = 1;
-    std::cout << shared_data->username[0] << std::endl;
+    // shared_data->userIdx = 1;
+    // std::cout << shared_data->username[0] << std::endl;
 
     LIBRARY_MEMORY_SIZE = sizeof(LIBRARY);
 
@@ -73,7 +73,9 @@ socketServer::socketServer(int port): serverPort(port){
 }
 
 socketServer::~socketServer(){
+    static_cast<LIBRARY*>(libraryMemory)->close();
     munmap(sharedMemory, SHARED_MEMORY_SIZE);
+    shm_unlink("libMem");
     close(this->lmsFd);
     std::cout << "Destructor !" << std::endl;
 }

@@ -8,6 +8,7 @@ protected:
     }
 
     void TearDown() override {
+        lib->close();
         // Clean up any resources used by the tests
     }
 
@@ -265,7 +266,7 @@ TEST_F(MyTestUI, LoginTest) {
     std::string fakeUsername = "aaa";
     std::string fakePassword = "aaa";
     login_id = ui->loginUI(fakeUsername.c_str(),fakePassword.c_str());
-    ASSERT_EQ(login_id,0);
+    ASSERT_EQ(login_id,-1);
 
 #if BLOCKSTDOUT
     std::string output = ::testing::internal::GetCapturedStdout();

@@ -12,39 +12,32 @@ UI::UI(int fd,void* shm,void* library):ID(-1){
     // strcpy(shared_data->username[shared_data->userIdx],"teresa");
     // std::cout << "Data in UI  shared memory: " << shared_data->username[shared_data->userIdx++] << " " << shared_data->userIdx << std::endl;  // Read data from the shared memory
 }
-// UI::UI(int fd,std::shared_ptr<LMS> shm,std::shared_ptr<LIBRARY> library):ID(-1){
-//     dup2(fd,STDIN_FILENO);
-//     dup2(fd,STDOUT_FILENO);
-//     dup2(fd,STDERR_FILENO);
-//     this->sharedMemory = shm;
-//     this->libMemory = library;
-//     // LMS* shared_data = static_cast<LMS*>(shm);
-//     // strcpy(shared_data->username[shared_data->userIdx],"teresa");
-//     // std::cout << "Data in UI  shared memory: " << shared_data->username[shared_data->userIdx++] << " " << shared_data->userIdx << std::endl;  // Read data from the shared memory
-// }
+
 int UI::registerUI(const char* username,const char* password){
     LMS* sharedData = this->sharedMemory;
+    sharedData->wait();
     for(int i=0;i<MAX_USER;i++){
-        if(strlen(sharedData->username[i])==0){
-            this->ID = i;
-            strcpy(sharedData->username[i],username);
-            strcpy(sharedData->password[i],password);
-            printf("Register success ! your username : %s, password : %s\n",sharedData->username[i],sharedData->password[i]);
-            return this->ID;
+        if(sharedData->getName(i).size()==0){
+            sharedData->insert(i,username,password);
+            // sem_post(sharedData->semaphore);
+            sharedData->post();
+            return i;
         }
     }
+    sharedData->post();
+
     return -1;
 }
-int UI::loginUI(const char* username,const char* password) const {
+int UI::loginUI(const std::string& username,const std::string& password){
     for(int i=0;i<MAX_USER;i++){
-        if(strlen(username)==strlen(sharedMemory->username[i]) && !strcmp(sharedMemory->username[i],username) &&\
-            strlen(password)==strlen(sharedMemory->password[i]) && !strcmp(sharedMemory->password[i],password)){
-                fprintf(stdout,"Welcome Back, %s !\n",username);
-                return i;
+        if(sharedMemory->checkLogin(i,username,password)>=0){
+            this->ID = i;
+            std::cout << i<< std::endl;
+            return i;
         }
     }
     fprintf(stdout,"User is not exited\n");
-    return 0;
+    return -1;
 }
 CMD UI::translate(std::string& command){
     std::string cmd = stringToLower(command);
@@ -109,7 +102,7 @@ int UI::parse(std::string& cmd){
         }
         case CMD::LOGIN:{
             std::pair<std::string,std::string> info = getUsernameAndPassword();
-            if(this->loginUI(info.first.c_str(),info.second.c_str())<0){
+            if(this->loginUI(info.first,info.second)<0){
                 fprintf(stderr,"Login Error !\n");
             }
             break;
@@ -123,11 +116,12 @@ int UI::parse(std::string& cmd){
             std::cout << bookName << std::endl;
             if(!bookName.size()) break;
             int bookId = stringToint(bookName);
+            libMemory->wait();
             if(bookId<0)
                 libMemory->borrow(this->ID,bookName.c_str());
             else
                 libMemory->borrow(this->ID,bookId);
-            // libMemory->checkState(this->ID,bookName.c_str());
+            libMemory->post();
             break;
         }
         case CMD::REMOVE:{
@@ -138,10 +132,12 @@ int UI::parse(std::string& cmd){
             std::string bookName = getBookName(cmd);
             if(!bookName.size()) break;
             int bookId = stringToint(bookName);
+            libMemory->wait();
             if(bookId<0)
                 libMemory->back(this->ID,bookName.c_str());
             else
                 libMemory->back(this->ID,bookId);
+            libMemory->post();
             break;
         }
         case CMD::MYBOOKS:{

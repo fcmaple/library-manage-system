@@ -10,6 +10,7 @@
 
 #include <iostream>
 #include <filesystem>
+#include <semaphore.h>
 
 #include "book.hpp"
 #include "server.hpp"
@@ -26,9 +27,13 @@ public:
     int search(const char*);
     int display();
     int getNum() const;
+    void close();
+    int wait();
+    int post();
 private:
     BOOK books[MAX_BOOKS];
     int bookNum;
+    sem_t* semaphore;
 
 };
 #endif
