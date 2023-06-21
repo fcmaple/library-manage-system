@@ -263,8 +263,10 @@ protected:
     }
     std::string username = "dave";
     std::string password = "dave";
-    std::shared_ptr<LIBRARY> lib = std::make_shared<LIBRARY>();
-    std::shared_ptr<LMS> lms =std::make_shared<LMS>();
+    // std::shared_ptr<LIBRARY> lib = std::make_shared<LIBRARY>();
+    // std::shared_ptr<LMS> lms =std::make_shared<LMS>();
+    LMS* lms = new LMS();
+    LIBRARY* lib = new LIBRARY();
     std::shared_ptr<UI> ui = std::make_shared<UI>(1,lms,lib);
 };
 TEST_F(MyTestUI, RegisterTest) {

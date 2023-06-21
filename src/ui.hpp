@@ -13,8 +13,8 @@ enum CMD{
 };
 class UI{
 public:
-    UI(int,std::shared_ptr<LMS>,std::shared_ptr<LIBRARY>);
-    // UI(int,std::shared_ptr<LMS>,void*);
+    // UI(int,std::shared_ptr<LMS>,std::shared_ptr<LIBRARY>);
+    UI(int,void*,void*);
     void reset();
     void welcome();
     int run();
@@ -24,8 +24,10 @@ public:
     int loginUI(const std::string&,const std::string&);
     CMD translate(std::string&);
 private:
-    std::shared_ptr<LMS> sharedMemory;
-    std::shared_ptr<LIBRARY> libMemory;
+    // std::shared_ptr<LMS> sharedMemory;
+    LMS* sharedMemory;
+    // std::shared_ptr<LIBRARY> libMemory;
+    LIBRARY* libMemory;
     int ID;
 };
 

@@ -20,7 +20,7 @@ std::string LMS::getName(const int id) const{
     return std::string(username[id]);
 }
 std::string LMS::getPassword(const int id) const{
-    return std::string(username[id]);
+    return std::string(password[id]);
 }
 int LMS::wait(){
     sem_wait(semaphore);

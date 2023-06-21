@@ -39,9 +39,10 @@ private:
     int nfds = sizeof(afds);
     size_t SHARED_MEMORY_SIZE;
     size_t LIBRARY_MEMORY_SIZE;
-    std::shared_ptr<LMS> sharedMemory;
-    std::shared_ptr<LIBRARY> libraryMemory;
-    // void* libraryMemory;
+    // std::shared_ptr<LMS> sharedMemory;
+    // std::shared_ptr<LIBRARY> libraryMemory;
+    LMS* sharedMemory;
+    LIBRARY* libraryMemory;
 
 };
 

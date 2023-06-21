@@ -4,14 +4,27 @@
 #include "util.hpp"
 // #include "library.hpp"
 
-UI::UI(int fd,std::shared_ptr<LMS> shm,std::shared_ptr<LIBRARY> library):ID(-1){
+// UI::UI(int fd,std::shared_ptr<LMS> shm,std::shared_ptr<LIBRARY> library):ID(-1){
+//     dup2(fd,STDIN_FILENO);
+//     dup2(fd,STDOUT_FILENO);
+//     dup2(fd,STDERR_FILENO);
+//     // this->sharedMemory = static_cast<LMS*>(shm);
+//     sharedMemory = shm;
+//     // this->libMemory = static_cast<LIBRARY*>(library);
+//     libMemory = library;
+//     // std::cout <<"con ui\n";
+//     // LMS* shared_data = static_cast<LMS*>(shm);
+//     // strcpy(shared_data->username[shared_data->userIdx],"teresa");
+//     // std::cout << "Data in UI  shared memory: " << shared_data->username[shared_data->userIdx++] << " " << shared_data->userIdx << std::endl;  // Read data from the shared memory
+// }
+UI::UI(int fd,void* shm,void* library):ID(-1){
     dup2(fd,STDIN_FILENO);
     dup2(fd,STDOUT_FILENO);
     dup2(fd,STDERR_FILENO);
-    // this->sharedMemory = static_cast<LMS*>(shm);
-    sharedMemory = shm;
-    // this->libMemory = static_cast<LIBRARY*>(library);
-    libMemory = library;
+    this->sharedMemory = static_cast<LMS*>(shm);
+    // sharedMemory = shm;
+    this->libMemory = static_cast<LIBRARY*>(library);
+    // libMemory = library;
     // std::cout <<"con ui\n";
     // LMS* shared_data = static_cast<LMS*>(shm);
     // strcpy(shared_data->username[shared_data->userIdx],"teresa");
@@ -19,9 +32,16 @@ UI::UI(int fd,std::shared_ptr<LMS> shm,std::shared_ptr<LIBRARY> library):ID(-1){
 }
 
 int UI::registerUI(const char* username,const char* password){
-    std::shared_ptr<LMS> sharedData = this->sharedMemory;
+    LMS* sharedData = this->sharedMemory;
     // std::cout << "register \n";
     sharedData->wait();
+    for(int i=0;i<MAX_USER;i++){
+        if(sharedData->getName(i)==std::string(username)){
+            fprintf(stdout,"username is already existed !\n");
+            sharedData->post();
+            return -1;
+        }
+    }
     for(int i=0;i<MAX_USER;i++){
         // std::cout<< i << std::endl;
         // std::cout << sharedData->getName(i).size() << std::endl;
@@ -40,7 +60,7 @@ int UI::loginUI(const std::string& username,const std::string& password){
     for(int i=0;i<MAX_USER;i++){
         if(sharedMemory->checkLogin(i,username,password)>=0){
             this->ID = i;
-            std::cout << i<< std::endl;
+            // std::cout << i<< std::endl;
             return i;
         }
     }
@@ -176,7 +196,7 @@ int UI::parse(std::string& cmd){
     return 1;
 }
 void UI::welcome(){
-    system("figlet -w 200 Library-System");
+    int res = system("figlet -w 200 Library-System");
     // printf("-------------------------------------\n");
     // printf("---   Library Management System   ---\n");
     // printf("-------------------------------------\n");

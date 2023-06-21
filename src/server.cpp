@@ -32,21 +32,21 @@ socketServer::socketServer(int port): serverPort(port){
 
     // new shm_fd
 
-    // SHARED_MEMORY_SIZE  = sizeof(LMS);
+    SHARED_MEMORY_SIZE  = sizeof(LMS);
 
-    // this->lmsFd = shm_open("/lmsMem",O_CREAT | O_RDWR,0666);
-    // if(this->lmsFd < 0){
-    //     std::cerr << "Error creating shared memory object." << std::endl;
-    // }
-    // if (ftruncate(this->lmsFd, SHARED_MEMORY_SIZE) == -1) {
-    //     std::cerr << "Error setting the size of shared memory." << std::endl;
-    // }
-    // sharedMemory = mmap(NULL, SHARED_MEMORY_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, this->lmsFd, 0);
-    // if (sharedMemory == MAP_FAILED) {
-    //     std::cerr << "Error mapping shared memory." << std::endl;
-    // }
-    // new (sharedMemory) LMS;
-    sharedMemory = std::allocate_shared<LMS>(std::allocator<LMS>());
+    this->lmsFd = shm_open("/lmsMem",O_CREAT | O_RDWR,0666);
+    if(this->lmsFd < 0){
+        std::cerr << "Error creating shared memory object." << std::endl;
+    }
+    if (ftruncate(this->lmsFd, SHARED_MEMORY_SIZE) == -1) {
+        std::cerr << "Error setting the size of shared memory." << std::endl;
+    }
+    sharedMemory = static_cast<LMS*>(mmap(NULL, SHARED_MEMORY_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, this->lmsFd, 0));
+    if (sharedMemory == MAP_FAILED) {
+        std::cerr << "Error mapping shared memory." << std::endl;
+    }
+    new (sharedMemory) LMS;
+    // sharedMemory = std::allocate_shared<LMS>(std::allocator<LMS>());
     // LMS* shared_data = static_cast<LMS*>(sharedMemory);
     // shared_data->reset();
 
@@ -55,21 +55,21 @@ socketServer::socketServer(int port): serverPort(port){
     // shared_data->userIdx = 1;
     // std::cout << shared_data->username[0] << std::endl;
 
-    // LIBRARY_MEMORY_SIZE = sizeof(LIBRARY);
+    LIBRARY_MEMORY_SIZE = sizeof(LIBRARY);
 
-    // this->libFd = shm_open("/libMem", O_CREAT | O_RDWR, 0666);
-    // if(this->libFd < 0){
-    //     std::cerr << "Error creating shared memory object." << std::endl;
-    // }
-    // if (ftruncate(this->libFd, LIBRARY_MEMORY_SIZE) == -1) {
-    //     std::cerr << "Error setting the size of shared memory." << std::endl;
-    // }
-    // libraryMemory = mmap(NULL, LIBRARY_MEMORY_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, this->libFd, 0);
-    // if (libraryMemory == MAP_FAILED) {
-    //     std::cerr << "Error mapping shared memory." << std::endl;
-    // }
-    // new (libraryMemory) LIBRARY;
-    libraryMemory = std::allocate_shared<LIBRARY>(std::allocator<LIBRARY>());
+    this->libFd = shm_open("/libMem", O_CREAT | O_RDWR, 0666);
+    if(this->libFd < 0){
+        std::cerr << "Error creating shared memory object." << std::endl;
+    }
+    if (ftruncate(this->libFd, LIBRARY_MEMORY_SIZE) == -1) {
+        std::cerr << "Error setting the size of shared memory." << std::endl;
+    }
+    libraryMemory = static_cast<LIBRARY*>(mmap(NULL, LIBRARY_MEMORY_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, this->libFd, 0));
+    if (libraryMemory == MAP_FAILED) {
+        std::cerr << "Error mapping shared memory." << std::endl;
+    }
+    new (libraryMemory) LIBRARY;
+    // libraryMemory = std::allocate_shared<LIBRARY>(std::allocator<LIBRARY>());
 
     // std::cout << "server con\n";
     // LIBRARY* lib_data = static_cast<LIBRARY*>(libraryMemory);
@@ -78,6 +78,15 @@ socketServer::socketServer(int port): serverPort(port){
 }
 
 socketServer::~socketServer(){
+    // delete libraryMemory;
+    // delete sharedMemory;
+    munmap(sharedMemory, sizeof(LMS));
+    munmap(libraryMemory, sizeof(LIBRARY));
+    shm_unlink("/libMem");
+    shm_unlink("/lmsMem");
+    close(this->lmsFd);
+    close(this->libFd);
+
     std::cout << "Destructor !" << std::endl;
 }
 int socketServer::run(){
