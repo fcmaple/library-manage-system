@@ -21,6 +21,8 @@
 
 #include "lms.hpp"
 #include "library.hpp"
+#include "ui.hpp"
+
 class socketServer{
 public:
     socketServer(int);
@@ -37,8 +39,9 @@ private:
     int nfds = sizeof(afds);
     size_t SHARED_MEMORY_SIZE;
     size_t LIBRARY_MEMORY_SIZE;
-    void* sharedMemory;
-    void* libraryMemory;
+    std::shared_ptr<LMS> sharedMemory;
+    std::shared_ptr<LIBRARY> libraryMemory;
+    // void* libraryMemory;
 
 };
 

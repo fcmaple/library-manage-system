@@ -32,3 +32,7 @@ int stringToint(const std::string& str){
     }
     return std::atoi(str.c_str());
 }
+int checkE(const std::string& str){
+    if(str[0]=='e' && str[1]=='_') return 1;
+    else return 0;
+}

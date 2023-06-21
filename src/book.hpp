@@ -20,7 +20,9 @@ enum bookType{
 class BOOK{
 public:
     BOOK(fs::directory_entry);
+    BOOK(fs::directory_entry,bookType);
     BOOK();
+    BOOK(bookType);
     // void set(const char*);
     void set(fs::directory_entry);
     int match(const char*) const;
@@ -28,8 +30,10 @@ public:
     int borrow(int);
     int back();
     int getBorrower() const;
+    bookType getType() const;
     std::string getName();
     int showDescription() const;
+    virtual int read()  = 0;
 private:
     char name[MAX_NAME];
     char path[MAX_NAME];
@@ -38,5 +42,26 @@ private:
     bookType type;
     
 };
+class EBOOK:public BOOK
+{
+private:
+    /* data */
+public:
+    EBOOK(fs::directory_entry);
+    EBOOK();
+    virtual int read()  override;
+};
+class PBOOK:public BOOK
+{
+private:
+    /* data */
+public:
+    PBOOK(fs::directory_entry);
+    PBOOK();
+    virtual int read()  override;
+
+};
+
+
 
 #endif

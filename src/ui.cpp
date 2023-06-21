@@ -2,21 +2,29 @@
 #include "server.hpp"
 #include "lms.hpp"
 #include "util.hpp"
-UI::UI(int fd,void* shm,void* library):ID(-1){
+// #include "library.hpp"
+
+UI::UI(int fd,std::shared_ptr<LMS> shm,std::shared_ptr<LIBRARY> library):ID(-1){
     dup2(fd,STDIN_FILENO);
     dup2(fd,STDOUT_FILENO);
     dup2(fd,STDERR_FILENO);
-    this->sharedMemory = static_cast<LMS*>(shm);
-    this->libMemory = static_cast<LIBRARY*>(library);
+    // this->sharedMemory = static_cast<LMS*>(shm);
+    sharedMemory = shm;
+    // this->libMemory = static_cast<LIBRARY*>(library);
+    libMemory = library;
+    // std::cout <<"con ui\n";
     // LMS* shared_data = static_cast<LMS*>(shm);
     // strcpy(shared_data->username[shared_data->userIdx],"teresa");
     // std::cout << "Data in UI  shared memory: " << shared_data->username[shared_data->userIdx++] << " " << shared_data->userIdx << std::endl;  // Read data from the shared memory
 }
 
 int UI::registerUI(const char* username,const char* password){
-    LMS* sharedData = this->sharedMemory;
+    std::shared_ptr<LMS> sharedData = this->sharedMemory;
+    // std::cout << "register \n";
     sharedData->wait();
     for(int i=0;i<MAX_USER;i++){
+        // std::cout<< i << std::endl;
+        // std::cout << sharedData->getName(i).size() << std::endl;
         if(sharedData->getName(i).size()==0){
             sharedData->insert(i,username,password);
             // sem_post(sharedData->semaphore);
@@ -116,11 +124,12 @@ int UI::parse(std::string& cmd){
             std::cout << bookName << std::endl;
             if(!bookName.size()) break;
             int bookId = stringToint(bookName);
+            int e_flag = checkE(bookName);
             libMemory->wait();
-            if(bookId<0)
-                libMemory->borrow(this->ID,bookName.c_str());
-            else
-                libMemory->borrow(this->ID,bookId);
+            if(bookId<0){
+                libMemory->borrow(this->ID,bookName.c_str(),e_flag);
+            }else
+                libMemory->borrow(this->ID,bookId,e_flag);
             libMemory->post();
             break;
         }
@@ -132,11 +141,12 @@ int UI::parse(std::string& cmd){
             std::string bookName = getBookName(cmd);
             if(!bookName.size()) break;
             int bookId = stringToint(bookName);
+            int e_flag = checkE(bookName);
             libMemory->wait();
             if(bookId<0)
-                libMemory->back(this->ID,bookName.c_str());
+                libMemory->back(this->ID,bookName.c_str(),e_flag);
             else
-                libMemory->back(this->ID,bookId);
+                libMemory->back(this->ID,bookId,e_flag);
             libMemory->post();
             break;
         }
@@ -156,6 +166,7 @@ int UI::parse(std::string& cmd){
             break;
         }
         case CMD::BOOKS:{
+            // std::cout << "books\n";
             libMemory->display();
             break;
         }
@@ -165,10 +176,11 @@ int UI::parse(std::string& cmd){
     return 1;
 }
 void UI::welcome(){
-    printf("-------------------------------------\n");
-    printf("---   Library Management System   ---\n");
-    printf("-------------------------------------\n");
-    printf("Welcome to Library Management System !\n");
+    system("figlet -w 200 Library-System");
+    // printf("-------------------------------------\n");
+    // printf("---   Library Management System   ---\n");
+    // printf("-------------------------------------\n");
+    // printf("Welcome to Library Management System !\n");
     printf("Input \"menu\", the terminal will display all the functions and descriptions of the system !\n");
 }
 int UI::run(){

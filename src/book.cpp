@@ -3,7 +3,23 @@
 BOOK::BOOK(fs::directory_entry entry){
     set(entry);
 }
+BOOK::BOOK(fs::directory_entry entry,bookType t){
+    set(entry);
+    type = t;
+    // std:: cout << "book con t\n";
+}
 BOOK::BOOK(){
+    state = false;
+    borrower = -1;
+    strcpy(name,"None");
+    strcpy(path,"None");
+}
+BOOK::BOOK(bookType t){
+    state = false;
+    borrower = -1;
+    strcpy(name,"None");
+    strcpy(path,"None");
+    type = t;
 }
 void BOOK::set(fs::directory_entry entry){
     memset(name,'\0',sizeof(name));
@@ -13,7 +29,7 @@ void BOOK::set(fs::directory_entry entry){
     strcpy(path,entry.path().c_str());
     state = false;
     borrower = -1;
-    type = bookType::PHISICAL;
+    // type = bookType::PHISICAL;
     // printf("Book Name: %s State: %d \n",name,state);
 
 }
@@ -44,6 +60,7 @@ int BOOK::getBorrower() const{
     return borrower;
 }
 std::string BOOK::getName(){
+    // std::cout <<name<<std::endl;
     return std::string(name);
 }
 int BOOK::back(){

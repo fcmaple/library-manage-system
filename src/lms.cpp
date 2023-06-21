@@ -1,6 +1,7 @@
 #include "lms.hpp"
 LMS::LMS(){
     reset();
+    // std::cout <<"lms con\n";
 }
 void LMS::reset(){
     for(int i=0;i<MAX_USER;i++){
@@ -10,6 +11,7 @@ void LMS::reset(){
     semaphore = sem_open("/lmsSem", O_CREAT | O_RDWR, 0666, 1);
 }
 LMS::~LMS(){
+    // std::cout <<"lms de\n";
     sem_close(semaphore);
     sem_unlink("/lmsSem");
 }
