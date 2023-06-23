@@ -34,14 +34,22 @@ void BOOK::set(fs::directory_entry entry){
 
 }
 int BOOK::match(const char* bookName) const{
-    if(strlen(name) == strlen(bookName) && !strcmp(name,bookName) ){
+    if(strlen(name) == strlen(bookName)){
+        for(int i=0;i<(int)strlen(name);i++){
+            printf("%s %s\n",name,bookName);
+            if(name[i]!=bookName[i] && bookName[i]-'a'+'A' != name[i]) return -1;
+        }
         if(!state)  return 1;
         else return 0;
     }
     return -1;
 }
 int BOOK::matchBack(int id, const char* bookName) const{
-    if(strlen(name) == strlen(bookName) && !strcmp(name,bookName) ){
+    if(strlen(name) == strlen(bookName) ){
+        for(int i=0;i<(int)strlen(name);i++){
+            // printf("%c %c %c\n",name[i],bookName[i],bookName[i]-'a'+'A');
+            if(name[i]!=bookName[i] && bookName[i]-'a'+'A' != name[i]) return -1;
+        }
         if(id==borrower) return 1;
         else return 0;
         // std::cout << id << " " << borrower <<std::endl;
@@ -59,9 +67,13 @@ int BOOK::borrow(int id){
 int BOOK::getBorrower() const{
     return borrower;
 }
-std::string BOOK::getName(){
+std::string BOOK::getName() const{
     // std::cout <<name<<std::endl;
     return std::string(name);
+}
+std::string BOOK::getPath() const{
+    // std::cout <<std::string(path)<<std::endl;
+    return std::string(path);
 }
 int BOOK::back(){
     state = false;

@@ -219,9 +219,59 @@ int LIBRARY::back(int id,const int bookId,int e_flag){
 
     return -1;
 }
+int LIBRARY::read(int id,const char* bookName,int e_flag){
+    printf("id: %d name:%s flag:%d\n",id,bookName,e_flag);
+    if(e_flag){
+        for(int i=0;i<ebookNum;i++){
+            int  state = ebooks[i].matchBack(id,bookName);
+            if(state>0){ // match
+                ebooks->read(ebooks[i].getPath());
+                return id;
+            }else if(state==0){
+                fprintf(stdout,"The book is already borrowed !\n");
+                return -1;
+            }
+        }
+    }else{
+        for(int i=0;i<pbookNum;i++){
+            int  state = pbooks[i].matchBack(id,bookName);
+            if(state>0){
+                pbooks->read(ebooks[i].getPath());
+                printf("state !! %d\n",id);
+                return id;
+            }else if(state==0){
+                fprintf(stdout,"The book is already borrowed !\n");
+                return -1;
+            }
+        }
+    }
+    fprintf(stdout,"The book is not existed in Library !\n");
+    return 1;
+}
+int LIBRARY::read(int id,const int bookId,int e_flag){
+    // printf("id: %d name:%s flag:%d\n",id,bookName,e_flag);
+    if(e_flag){
+        if(bookId > ebookNum){
+            fprintf(stdout,"The book ID is not existed in Library !\n");
+            return -1;
+        }
+        if(ebooks[bookId-1].getBorrower()<0){
+            fprintf(stdout,"The book is available !\n");
+        }
+        if(ebooks[bookId-1].getBorrower()!=id){
+            fprintf(stdout,"The borrower is not you!\n");
+        }
+        ebooks->read(ebooks[bookId-1].getPath());
+    }else{
+        //TODO
+        printf("pbook\n");
+    }
+    return 1;
+}
 int LIBRARY::display(){
     // std::cout <<"in\n";
     // std::cout << ebookNum << " " << pbookNum<<std::endl;
+    fprintf(stdout,"ebooks: \n");
     for(int i=0;i<ebookNum;i++){
         // std::cout << i<<std::endl;
         // std::cout<<ebooks[ebookNum-1].getName()<<std::endl;
@@ -232,6 +282,7 @@ int LIBRARY::display(){
         if(state<0) fprintf(stdout,"     State: Avaliable\n");
         else fprintf(stdout,"     State: Borrowed\n");
     }
+    fprintf(stdout,"pbooks: \n");
     for(int i=0;i<pbookNum;i++){
         std::string bn = pbooks[i].getName();
         int state = pbooks[i].getBorrower();

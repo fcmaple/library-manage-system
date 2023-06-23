@@ -31,10 +31,11 @@ public:
     int back();
     int getBorrower() const;
     bookType getType() const;
-    std::string getName();
+    std::string getName() const;
+    std::string getPath() const;
     int showDescription() const;
-    virtual int read()  = 0;
-private:
+    virtual int read(const std::string&)  = 0;
+protected:
     char name[MAX_NAME];
     char path[MAX_NAME];
     bool state;
@@ -46,10 +47,11 @@ class EBOOK:public BOOK
 {
 private:
     /* data */
+    int bookLabel;
 public:
     EBOOK(fs::directory_entry);
     EBOOK();
-    virtual int read()  override;
+    virtual int read(const std::string&)  override;
 };
 class PBOOK:public BOOK
 {
@@ -58,7 +60,7 @@ private:
 public:
     PBOOK(fs::directory_entry);
     PBOOK();
-    virtual int read()  override;
+    virtual int read(const std::string&)  override;
 
 };
 

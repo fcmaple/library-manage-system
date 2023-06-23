@@ -25,6 +25,8 @@ public:
     int borrow(int ,const int ,int);
     int back(int,const char*,int);
     int back(int,const int,int);
+    int read(int,const int,int);
+    int read(int,const char*,int);
     int checkState(int);
     int search(const char*);
     int display();
@@ -32,6 +34,7 @@ public:
     void close();
     int wait();
     int post();
+
 private:
     EBOOK ebooks[MAX_BOOKS];
     PBOOK pbooks[MAX_BOOKS];

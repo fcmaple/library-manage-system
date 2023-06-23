@@ -89,6 +89,8 @@ CMD UI::translate(std::string& command){
         return CMD::BOOKS;
     }else if(cmd.substr(0,6) == "search"){
         return CMD::SEARCH;
+    }else if(cmd.substr(0,4) == "read"){
+        return CMD::READ;
     }else{
         fprintf(stdout,"Invalid Command\n");
         return CMD::INVALID;
@@ -103,6 +105,7 @@ const std::pair<std::string,std::string> UI::getUsernameAndPassword(){
     return {name,pwd};
 }
 int UI::parse(std::string& cmd){
+
     CMD command = translate(cmd);
     switch (command)
     {
@@ -141,10 +144,12 @@ int UI::parse(std::string& cmd){
                 break;
             }
             std::string bookName = getBookName(cmd);
-            std::cout << bookName << std::endl;
+            // std::cout << "bookname :"<<bookName << std::endl;
             if(!bookName.size()) break;
             int bookId = stringToint(bookName);
-            int e_flag = checkE(bookName);
+            // std::cout << "id : "<<bookId<<std::endl;
+            int e_flag = checkE(cmd);
+            // std::cout << "flag: " <<e_flag<<std::endl; 
             libMemory->wait();
             if(bookId<0){
                 libMemory->borrow(this->ID,bookName.c_str(),e_flag);
@@ -161,7 +166,7 @@ int UI::parse(std::string& cmd){
             std::string bookName = getBookName(cmd);
             if(!bookName.size()) break;
             int bookId = stringToint(bookName);
-            int e_flag = checkE(bookName);
+            int e_flag = checkE(cmd);
             libMemory->wait();
             if(bookId<0)
                 libMemory->back(this->ID,bookName.c_str(),e_flag);
@@ -188,6 +193,22 @@ int UI::parse(std::string& cmd){
         case CMD::BOOKS:{
             // std::cout << "books\n";
             libMemory->display();
+            break;
+        }
+        case CMD::READ:{
+            if(ID<0) {
+                fprintf(stdout,"You need to login to read the book in your bookself. !\n");
+                break;
+            }
+            std::string bookName = getBookName(cmd);
+            if(!bookName.size()) break;
+            int bookId = stringToint(bookName);
+            int e_flag = checkE(cmd);
+            std::cout << "id : "<<bookId<<std::endl;
+            if(bookId < 0)
+                libMemory->read(this->ID,bookName.c_str(),e_flag);
+            else
+                libMemory->read(this->ID,bookId,e_flag);
             break;
         }
         default:

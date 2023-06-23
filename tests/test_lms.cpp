@@ -148,7 +148,9 @@ protected:
         std::string dirPath = "./data";
         try {
             for (const fs::directory_entry& entry : fs::directory_iterator(dirPath)) {
-                if (entry.is_regular_file() && checkE(entry.path().filename())) {
+                if (entry.is_regular_file()) {
+                    std::string str = entry.path().filename();
+                    if(str[0]!='e' || str[1]!='_') continue;
                     book->set(entry);
                     bookName = removeEnd(entry.path().filename());
                     bookPath = entry.path();
@@ -180,6 +182,18 @@ TEST_F(MyTestBook, MatchTest) {
     ASSERT_EQ(book->match(testName.c_str()),-1);
     testName = bookName;
     ASSERT_EQ(book->match(testName.c_str()),1);
+#if BLOCKSTDOUT
+    std::string output = ::testing::internal::GetCapturedStdout();
+#endif
+}
+TEST_F(MyTestBook, readTest) {
+#if BLOCKSTDOUT
+    ::testing::internal::CaptureStdout();
+#endif
+    std::string testName = "aaa";
+    ASSERT_EQ(book->read(testName),-1);
+    testName = book->getPath();
+    ASSERT_EQ(book->read(book->getPath()),1);
 #if BLOCKSTDOUT
     std::string output = ::testing::internal::GetCapturedStdout();
 #endif
