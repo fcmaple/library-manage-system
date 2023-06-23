@@ -6,7 +6,7 @@ LIBRARY::LIBRARY(){
 }
 LIBRARY::~LIBRARY(){
     sem_close(semaphore);
-    sem_unlink("/libSemaphore");
+    sem_unlink("/libSem");
     // std::cout<<"lib de\n";
 }
 void LIBRARY::init(){
@@ -29,7 +29,7 @@ void LIBRARY::init(){
     } catch (const fs::filesystem_error& ex) {
         std::cerr << "Error: " << ex.what() << std::endl;
     }
-    semaphore = sem_open("/libSemaphore", O_CREAT | O_RDWR, 0666, 1);
+    semaphore = sem_open("/libSem", O_CREAT | O_RDWR, 0666, 1);
     // fprintf(stdout,"LIBRARY init ,book num: %d !\n",bookNum);
 }
 void LIBRARY::close(){
@@ -82,7 +82,7 @@ int LIBRARY::checkState(int id){
         if(borrower == id){
             fprintf(stdout,"%s\n",ebooks[i].getName().c_str());
             // fprintf(stdout,"the borrower is %d\n",borrower);
-            return borrower;
+            // return borrower;
         }
     }
     for(int i=0;i<pbookNum;i++){
@@ -90,7 +90,7 @@ int LIBRARY::checkState(int id){
         if(borrower == id){
             fprintf(stdout,"%s\n",pbooks[i].getName().c_str());
             // fprintf(stdout,"the borrower is %d\n",borrower);
-            return borrower;
+            // return borrower;
         }
     }
     // fprintf(stdout,"The book is not existed in Library !\n");
@@ -225,7 +225,8 @@ int LIBRARY::read(int id,const char* bookName,int e_flag){
         for(int i=0;i<ebookNum;i++){
             int  state = ebooks[i].matchBack(id,bookName);
             if(state>0){ // match
-                ebooks->read(ebooks[i].getPath());
+                // ebooks->read(ebooks[i].getPath());
+                ebooks[i].read();
                 return id;
             }else if(state==0){
                 fprintf(stdout,"The book is already borrowed !\n");
@@ -236,7 +237,8 @@ int LIBRARY::read(int id,const char* bookName,int e_flag){
         for(int i=0;i<pbookNum;i++){
             int  state = pbooks[i].matchBack(id,bookName);
             if(state>0){
-                pbooks->read(ebooks[i].getPath());
+                // pbooks->read(ebooks[i].getPath());
+                pbooks[i].read();
                 printf("state !! %d\n",id);
                 return id;
             }else if(state==0){
@@ -257,11 +259,13 @@ int LIBRARY::read(int id,const int bookId,int e_flag){
         }
         if(ebooks[bookId-1].getBorrower()<0){
             fprintf(stdout,"The book is available !\n");
+            return -1;
         }
         if(ebooks[bookId-1].getBorrower()!=id){
             fprintf(stdout,"The borrower is not you!\n");
+            return -1;
         }
-        ebooks->read(ebooks[bookId-1].getPath());
+        ebooks[bookId-1].read();
     }else{
         //TODO
         printf("pbook\n");

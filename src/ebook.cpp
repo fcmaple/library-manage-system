@@ -8,11 +8,17 @@ EBOOK:: EBOOK():BOOK(bookType::ELECTRONIC)
     // printf("ebook\n");
     bookLabel = 0;
 }
-int EBOOK::read(const std::string& name) {
-    // printf("ebook read !\n");
-    // std::cout << name << std::endl;
+int EBOOK::back(){
+    state = false;
+    borrower = -1;
+    bookLabel = 0;
+    fprintf(stdout,"You return the e-Book \"%s\"\n",name);
+    return state;
+}
 
-    std::ifstream inputFile(name);
+int EBOOK::read() {
+    // printf("ebook read !\n");
+    std::ifstream inputFile(path);
     if (!inputFile) {
         std::cerr << "Failed to open the file." << std::endl;
         return -1;

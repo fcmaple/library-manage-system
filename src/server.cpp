@@ -5,7 +5,7 @@ socketServer::socketServer(int port): serverPort(port){
 
     this->serverAddr.sin_family = AF_INET;
     this->serverAddr.sin_port = htons(port);
-#if 0
+#if PUBLIC
     this->serverAddr.sin_addr.s_addr = INADDR_ANY;
 #else
     this->serverAddr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);//INADDR_ANY;

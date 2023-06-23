@@ -28,13 +28,13 @@ public:
     int match(const char*) const;
     int matchBack(int,const char*) const;
     int borrow(int);
-    int back();
+    virtual int back();
     int getBorrower() const;
     bookType getType() const;
     std::string getName() const;
     std::string getPath() const;
     int showDescription() const;
-    virtual int read(const std::string&)  = 0;
+    virtual int read();
 protected:
     char name[MAX_NAME];
     char path[MAX_NAME];
@@ -51,7 +51,8 @@ private:
 public:
     EBOOK(fs::directory_entry);
     EBOOK();
-    virtual int read(const std::string&)  override;
+    virtual int back() override;
+    virtual int read()  override;
 };
 class PBOOK:public BOOK
 {
@@ -60,7 +61,7 @@ private:
 public:
     PBOOK(fs::directory_entry);
     PBOOK();
-    virtual int read(const std::string&)  override;
+    virtual int read()  override;
 
 };
 

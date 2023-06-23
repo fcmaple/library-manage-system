@@ -2,7 +2,7 @@
 #define SERVER_HPP
 
 #define MAX_USER 50
-
+#define PUBLIC 0
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <errno.h>

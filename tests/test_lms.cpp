@@ -190,10 +190,7 @@ TEST_F(MyTestBook, readTest) {
 #if BLOCKSTDOUT
     ::testing::internal::CaptureStdout();
 #endif
-    std::string testName = "aaa";
-    ASSERT_EQ(book->read(testName),-1);
-    testName = book->getPath();
-    ASSERT_EQ(book->read(book->getPath()),1);
+    ASSERT_EQ(book->read(),1);
 #if BLOCKSTDOUT
     std::string output = ::testing::internal::GetCapturedStdout();
 #endif

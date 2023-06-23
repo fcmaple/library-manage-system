@@ -51,7 +51,7 @@ $(OBJ_DIR)/%.o: $(TEST_DIR)/%.cpp
 	$(CXX) $(CXXFLAGS) $(INC) -c -o $@ $<
 
 clean:
-	rm -rf $(OBJ_DIR)/*.o $(BIN_DIR)/$(PROG) $(BIN_DIR)/$(TEST_PROG)
+	rm -rf $(OBJ_DIR)/*.o $(BIN_DIR)/$(PROG) $(BIN_DIR)/$(TEST_PROG) /dev/shm/sem.lmsSem /dev/shm/sem.libSem
 
 
 

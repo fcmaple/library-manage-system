@@ -95,3 +95,7 @@ int BOOK::showDescription() const{
     file.close();
     return 1;
 }
+int BOOK::read(){
+    std::cout << "book !\n";
+    return 1;
+}
