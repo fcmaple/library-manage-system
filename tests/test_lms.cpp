@@ -64,7 +64,7 @@ TEST_F(MyTestFixture, BorrowTestByName) {
     std::string testName = "aaa";
     ASSERT_EQ(lib->borrow(id,testName.c_str(),0),-1);
     ASSERT_EQ(lib->borrow(id,testName.c_str(),1),-1);
-    testName = "WorkOut";
+    testName = "workout";
     ASSERT_EQ(lib->borrow(id,testName.c_str(),0),id);
     ASSERT_EQ(lib->borrow(id,testName.c_str(),0),-1);
     testName = "e_HarryPotter_1";
@@ -103,7 +103,7 @@ TEST_F(MyTestFixture, BackTestByName) {
     std::string testName = "aaa";
     ASSERT_EQ(lib->back(id,testName.c_str(),0),-1);
     ASSERT_EQ(lib->back(id,testName.c_str(),1),-1);
-    testName = "WorkOut";
+    testName = "workout";
     ASSERT_EQ(lib->borrow(id,testName.c_str(),0),id);
     ASSERT_EQ(lib->back(id,testName.c_str(),0),id);
     ASSERT_EQ(lib->back(id,testName.c_str(),0),-1);

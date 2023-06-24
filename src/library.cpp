@@ -7,7 +7,6 @@ LIBRARY::LIBRARY(){
 LIBRARY::~LIBRARY(){
     sem_close(semaphore);
     sem_unlink("/libSem");
-    // std::cout<<"lib de\n";
 }
 void LIBRARY::init(){
     std::string dirPath = "./data";
@@ -16,7 +15,6 @@ void LIBRARY::init(){
     try {
         for (const fs::directory_entry& entry : fs::directory_iterator(dirPath)) {
             if (entry.is_regular_file()) {
-                // std::cout << entry.path() << std::endl;
                 std::string bookName = entry.path().filename();
                 if(bookName[0] == 'e'){
                     ebooks[ebookNum++].set(entry);
@@ -24,13 +22,11 @@ void LIBRARY::init(){
                 else
                     pbooks[pbookNum++].set(entry);
             }
-            // std::cout << ebookNum << " " << pbookNum << std::endl;
         }
     } catch (const fs::filesystem_error& ex) {
         std::cerr << "Error: " << ex.what() << std::endl;
     }
     semaphore = sem_open("/libSem", O_CREAT | O_RDWR, 0666, 1);
-    // fprintf(stdout,"LIBRARY init ,book num: %d !\n",bookNum);
 }
 void LIBRARY::close(){
     sem_close(semaphore);
@@ -46,27 +42,26 @@ int LIBRARY::post(){
 }
 int LIBRARY::search(const char* bookName){
     std::string book_str(bookName);
-    // book_str = stringToLower(book_str);
     for(int i=0;i<ebookNum;i++){
         std::string bn = ebooks[i].getName();
-        // std:: cout <<book_str<< " "<< stringToLower(bn) <<std::endl;
         if(book_str!=stringToLower(bn)) continue;
         fprintf(stdout,"\nBook: %s\n",bookName);
         fprintf(stdout,"Borrowing status: ");
         if(ebooks[i].getBorrower()<0) fprintf(stdout,"Avaliable\n");
         else fprintf(stdout,"Borrowed\n");
+        fprintf(stdout,"Book type: e-book\n");
         fprintf(stdout,"Description: \n");
         ebooks[i].showDescription();
         return 1;
     }
     for(int i=0;i<pbookNum;i++){
         std::string bn = pbooks[i].getName();
-        // std:: cout <<book_str<< " "<< stringToLower(bn) <<std::endl;
         if(book_str!=stringToLower(bn)) continue;
         fprintf(stdout,"\nBook: %s\n",bookName);
         fprintf(stdout,"Borrowing status: ");
         if(pbooks[i].getBorrower()<0) fprintf(stdout,"Avaliable\n");
         else fprintf(stdout,"Borrowed\n");
+        fprintf(stdout,"Book type: p-book\n");
         fprintf(stdout,"Description: \n");
         pbooks[i].showDescription();
         return 1;
@@ -75,25 +70,20 @@ int LIBRARY::search(const char* bookName){
     return 0;
 }
 int LIBRARY::checkState(int id){
-    // int count = 0;
-    fprintf(stdout,"Your bookshelf !\n");
+    fprintf(stdout,"e-books :\n");
     for(int i=0;i<ebookNum;i++){
         int borrower = ebooks[i].getBorrower();
         if(borrower == id){
-            fprintf(stdout,"%s\n",ebooks[i].getName().c_str());
-            // fprintf(stdout,"the borrower is %d\n",borrower);
-            // return borrower;
+            fprintf(stdout,"%3d. %s\n",i+1,ebooks[i].getName().c_str());
         }
     }
+    fprintf(stdout,"p-books :\n");
     for(int i=0;i<pbookNum;i++){
         int borrower = pbooks[i].getBorrower();
         if(borrower == id){
-            fprintf(stdout,"%s\n",pbooks[i].getName().c_str());
-            // fprintf(stdout,"the borrower is %d\n",borrower);
-            // return borrower;
+            fprintf(stdout,"%3d. %s\n",i+1,pbooks[i].getName().c_str());
         }
     }
-    // fprintf(stdout,"The book is not existed in Library !\n");
     return 1;
 }
 int LIBRARY::borrow(int id,const char* bookName,int e_flag){
@@ -102,7 +92,6 @@ int LIBRARY::borrow(int id,const char* bookName,int e_flag){
             int state = ebooks[i].match(bookName);
             if(state>0){
                 ebooks[i].borrow(id);
-                printf("state !! %d\n",id);
                 return id;
             }else if(state==0){
                 fprintf(stdout,"The book is already borrowed !\n");
@@ -114,7 +103,6 @@ int LIBRARY::borrow(int id,const char* bookName,int e_flag){
             int state = pbooks[i].match(bookName);
             if(state>0){
                 pbooks[i].borrow(id);
-                printf("state !! %d\n",id);
                 return id;
             }else if(state==0){
                 fprintf(stdout,"The book is already borrowed !\n");
@@ -220,12 +208,10 @@ int LIBRARY::back(int id,const int bookId,int e_flag){
     return -1;
 }
 int LIBRARY::read(int id,const char* bookName,int e_flag){
-    printf("id: %d name:%s flag:%d\n",id,bookName,e_flag);
     if(e_flag){
         for(int i=0;i<ebookNum;i++){
             int  state = ebooks[i].matchBack(id,bookName);
             if(state>0){ // match
-                // ebooks->read(ebooks[i].getPath());
                 ebooks[i].read();
                 return id;
             }else if(state==0){
@@ -237,9 +223,7 @@ int LIBRARY::read(int id,const char* bookName,int e_flag){
         for(int i=0;i<pbookNum;i++){
             int  state = pbooks[i].matchBack(id,bookName);
             if(state>0){
-                // pbooks->read(ebooks[i].getPath());
                 pbooks[i].read();
-                printf("state !! %d\n",id);
                 return id;
             }else if(state==0){
                 fprintf(stdout,"The book is already borrowed !\n");
@@ -251,7 +235,6 @@ int LIBRARY::read(int id,const char* bookName,int e_flag){
     return 1;
 }
 int LIBRARY::read(int id,const int bookId,int e_flag){
-    // printf("id: %d name:%s flag:%d\n",id,bookName,e_flag);
     if(e_flag){
         if(bookId > ebookNum){
             fprintf(stdout,"The book ID is not existed in Library !\n");
@@ -267,21 +250,27 @@ int LIBRARY::read(int id,const int bookId,int e_flag){
         }
         ebooks[bookId-1].read();
     }else{
-        //TODO
-        printf("pbook\n");
+        if(bookId > pbookNum){
+            fprintf(stdout,"The book ID is not existed in Library !\n");
+            return -1;
+        }
+        if(pbooks[bookId-1].getBorrower()<0){
+            fprintf(stdout,"The book is available !\n");
+            return -1;
+        }
+        if(pbooks[bookId-1].getBorrower()!=id){
+            fprintf(stdout,"The borrower is not you!\n");
+            return -1;
+        }
+        pbooks[bookId-1].read();
     }
     return 1;
 }
 int LIBRARY::display(){
-    // std::cout <<"in\n";
-    // std::cout << ebookNum << " " << pbookNum<<std::endl;
     fprintf(stdout,"ebooks: \n");
     for(int i=0;i<ebookNum;i++){
-        // std::cout << i<<std::endl;
-        // std::cout<<ebooks[ebookNum-1].getName()<<std::endl;
         std::string bn = ebooks[i].getName();
         int state = ebooks[i].getBorrower();
-        // std::cout << bn<< std::endl;
         fprintf(stdout,"%3d. Name: %s \n",i+1,bn.c_str());
         if(state<0) fprintf(stdout,"     State: Avaliable\n");
         else fprintf(stdout,"     State: Borrowed\n");

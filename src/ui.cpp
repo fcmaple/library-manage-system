@@ -29,11 +29,9 @@ int UI::registerUI(const char* username,const char* password){
     return -1;
 }
 int UI::loginUI(const std::string& username,const std::string& password){
-    // sharedMemory->wait();
     for(int i=0;i<MAX_USER;i++){
         if(sharedMemory->checkLogin(i,username,password)>=0){
             this->ID = i;
-            // sharedMemory->post();
             return i;
         }
     }
@@ -56,6 +54,7 @@ CMD UI::translate(std::string& command){
     }else if(cmd.substr(0,2) == "rm"){
         return CMD::REMOVE;
     }else if(cmd.size()==0){
+        if(readingBook.size()) return CMD::READING;
         return CMD::NOTHING;
     }else if(cmd.substr(0,7) == "mybooks"){
         return CMD::MYBOOKS;
@@ -119,16 +118,13 @@ int UI::parse(std::string& cmd){
         }
         case CMD::ADD:{
             if(ID<0) {
-                fprintf(stdout,"You need to login to add the book in your bookself. !\n");
+                fprintf(stdout,"You need to login to add the book in your bookself.\n");
                 break;
             }
             std::string bookName = getBookName(cmd);
-            // std::cout << "bookname :"<<bookName << std::endl;
             if(!bookName.size()) break;
             int bookId = stringToint(bookName);
-            // std::cout << "id : "<<bookId<<std::endl;
             int e_flag = checkE(cmd);
-            // std::cout << "flag: " <<e_flag<<std::endl; 
             libMemory->wait();
             if(bookId<0){
                 libMemory->borrow(this->ID,bookName.c_str(),e_flag);
@@ -139,7 +135,7 @@ int UI::parse(std::string& cmd){
         }
         case CMD::REMOVE:{
             if(ID<0) {
-                fprintf(stdout,"You need to login to remove the book in your bookself. !\n");
+                fprintf(stdout,"You need to login to remove the book in your bookself.\n");
                 break;
             }
             std::string bookName = getBookName(cmd);
@@ -156,7 +152,7 @@ int UI::parse(std::string& cmd){
         }
         case CMD::MYBOOKS:{
             if(ID<0) {
-                fprintf(stdout,"You need to login to check the book in your bookself. !\n");
+                fprintf(stdout,"You need to login to check the book in your bookself.\n");
                 break;
             }
             libMemory->wait();
@@ -179,7 +175,7 @@ int UI::parse(std::string& cmd){
         }
         case CMD::READ:{
             if(ID<0) {
-                fprintf(stdout,"You need to login to read the book in your bookself. !\n");
+                fprintf(stdout,"You need to login to read the book in your bookself.\n");
                 break;
             }
             std::string bookName = getBookName(cmd);
@@ -187,15 +183,34 @@ int UI::parse(std::string& cmd){
             int bookId = stringToint(bookName);
             int e_flag = checkE(cmd);
             libMemory->wait();
-            if(bookId < 0)
+            if(bookId < 0){
                 libMemory->read(this->ID,bookName.c_str(),e_flag);
-            else
+            }else
                 libMemory->read(this->ID,bookId,e_flag);
+            readingBook = bookName;
+            libMemory->post();
+            break;
+        }
+        case CMD::READING:{
+            if(ID<0) {
+                fprintf(stdout,"You need to login to read the book in your bookself.\n");
+                break;
+            }
+            std::string bookName = readingBook;
+            int bookId = stringToint(bookName);
+            libMemory->wait();
+            if(bookId < 0){
+                libMemory->read(this->ID,bookName.c_str(),1);
+            }else
+                libMemory->read(this->ID,bookId,1);
             libMemory->post();
             break;
         }
         default:
             break;
+    }
+    if(command!=CMD::READING && command!=CMD::READ){
+        readingBook = "";
     }
     return 1;
 }
@@ -212,6 +227,5 @@ int UI::run(){
         if(!parse(cmd))
             break;
     }
-    std::cout << "exit !\n";
     return 1;
 }

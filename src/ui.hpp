@@ -9,7 +9,7 @@
 #include "library.hpp"
 
 enum CMD{
-	EXIT,REGISTER,MENU,LOGIN,ADD,REMOVE,NOTHING,MYBOOKS,BOOKS,SEARCH,READ,INVALID,
+	EXIT,REGISTER,MENU,LOGIN,ADD,REMOVE,NOTHING,MYBOOKS,BOOKS,SEARCH,READ,READING,INVALID,
 };
 class UI{
 public:
@@ -24,7 +24,7 @@ public:
     int loginUI(const std::string&,const std::string&);
     CMD translate(std::string&);
 private:
-    // std::shared_ptr<LMS> sharedMemory;
+    std::string readingBook;
     LMS* sharedMemory;
     // std::shared_ptr<LIBRARY> libMemory;
     LIBRARY* libMemory;

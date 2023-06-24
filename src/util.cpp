@@ -18,7 +18,7 @@ std::string getBookName(std::string& str){
             end = i;
         }
         if(start>=0 && end >=0){
-            return str.substr(start+1,end-start);
+            return str.substr(start+1,end-start-1);
         }
     }
     if(start>=0) return str.substr(start+1);
@@ -34,11 +34,10 @@ std::string removeEnd(const std::string& str){
 }
 int stringToint(const std::string& str){
     int n = str.size();
-    // std::cout << "string : "<<str<<" size "<<str.size()<<std::endl;
     std::string tmp;
     for(int i=0;i<n;i++){
-        if(str[i]=='\n' || str[i]=='\r') continue;
-        if(str[i]<'0' && str[i]>'9'){
+        if(str[i]=='\n' || str[i]=='\r' || str[i]=='\t') continue;
+        if(!std::isdigit(str[i])){
             return -1;
         }
         tmp += str[i];
@@ -49,7 +48,6 @@ int checkE(const std::string& str){
     int n = str.size();
     int count = 0;
     for(int i=0;i<n;i++){
-        // if(str.substr(i,3)==" e_") return 1;
         if(i+2<n && str.substr(i,3)==" e_") return 1;
         if(count==2 && str[i]=='e') return 1;
         if(str[i]==' ') count ++;

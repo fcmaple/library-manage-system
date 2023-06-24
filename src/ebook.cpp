@@ -5,7 +5,6 @@ EBOOK:: EBOOK(fs::directory_entry entry): BOOK(entry){
 }
 EBOOK:: EBOOK():BOOK(bookType::ELECTRONIC)
 {
-    // printf("ebook\n");
     bookLabel = 0;
 }
 int EBOOK::back(){
@@ -17,7 +16,6 @@ int EBOOK::back(){
 }
 
 int EBOOK::read() {
-    // printf("ebook read !\n");
     std::ifstream inputFile(path);
     if (!inputFile) {
         std::cerr << "Failed to open the file." << std::endl;
@@ -26,16 +24,26 @@ int EBOOK::read() {
     inputFile.seekg(0, std::ios::beg);
     std::streampos beginPosition = inputFile.tellg();
     inputFile.seekg(bookLabel, std::ios::beg);
+    std::streampos currentPosition = inputFile.tellg();
 
     int t =3;
     std::string line;
     
     while(t--){
+        currentPosition = inputFile.tellg();
+        if(currentPosition<0){
+            break;
+        }
         std::getline(inputFile,line);
         std::cout << line << std::endl;
     }
-    std::streampos currentPosition = inputFile.tellg();
-    this->bookLabel = currentPosition - beginPosition;
+    currentPosition = inputFile.tellg();
+    if(currentPosition < 0){
+        fprintf(stdout,"---------- END ----------\n");
+        this->bookLabel = beginPosition;
+    }
+    else
+        this->bookLabel = currentPosition - beginPosition;
     inputFile.close();
     return 1;
 } 

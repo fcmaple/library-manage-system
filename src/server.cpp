@@ -46,15 +46,6 @@ socketServer::socketServer(int port): serverPort(port){
         std::cerr << "Error mapping shared memory." << std::endl;
     }
     new (sharedMemory) LMS;
-    // sharedMemory = std::allocate_shared<LMS>(std::allocator<LMS>());
-    // LMS* shared_data = static_cast<LMS*>(sharedMemory);
-    // shared_data->reset();
-
-    // strcpy(shared_data->username[0],"Dave");
-
-    // shared_data->userIdx = 1;
-    // std::cout << shared_data->username[0] << std::endl;
-
     LIBRARY_MEMORY_SIZE = sizeof(LIBRARY);
 
     this->libFd = shm_open("/libMem", O_CREAT | O_RDWR, 0666);
@@ -69,17 +60,11 @@ socketServer::socketServer(int port): serverPort(port){
         std::cerr << "Error mapping shared memory." << std::endl;
     }
     new (libraryMemory) LIBRARY;
-    // libraryMemory = std::allocate_shared<LIBRARY>(std::allocator<LIBRARY>());
 
-    // std::cout << "server con\n";
-    // LIBRARY* lib_data = static_cast<LIBRARY*>(libraryMemory);
-    // lib_data->init();
 
 }
 
 socketServer::~socketServer(){
-    // delete libraryMemory;
-    // delete sharedMemory;
     munmap(sharedMemory, sizeof(LMS));
     munmap(libraryMemory, sizeof(LIBRARY));
     shm_unlink("/libMem");
@@ -87,7 +72,6 @@ socketServer::~socketServer(){
     close(this->lmsFd);
     close(this->libFd);
 
-    std::cout << "Destructor !" << std::endl;
 }
 int socketServer::run(){
     while(1){
@@ -122,10 +106,8 @@ int socketServer::createProcess(){
         fprintf(stderr,"accept error !\n");
         return -1;
     }
-    fprintf(stderr,"new client !\n");
     pid_t child = fork();
     if(!child){
-        std::cout << "child\n";
         std::shared_ptr<UI> ui(new UI(ssock,this->sharedMemory,this->libraryMemory));
         ui->run();
         close(ssock);
